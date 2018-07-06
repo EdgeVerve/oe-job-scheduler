@@ -1,0 +1,13 @@
+{
+  "_meta": {
+    "sources": [
+      "../common/models"
+    ],
+    "mixins": [
+    ]
+  },
+  "JobScheduler": {
+    "dataSource": "db",
+    "public": true
+  }
+}

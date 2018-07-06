@@ -1,0 +1,15 @@
+﻿{
+    "name": "JobScheduler",
+    "base": "PersistedModel",
+    "idinjection": true,
+    "strict": false,
+    "description": "This model stores Job-Scheduler details",
+    "options": {
+        "isFrameworkModel": true
+    },
+    "properties": {
+    },
+    "validations": [],
+    "relations": {},
+    "methods": {}
+}
