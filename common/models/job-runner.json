@@ -1,0 +1,15 @@
+﻿{
+    "name": "JobRunner",
+    "base": "PersistedModel",
+    "idinjection": true,
+    "strict": false,
+    "description": "This model stores Job-Runner details",
+    "options": {
+        "isFrameworkModel": true
+    },
+    "properties": {
+    },
+    "validations": [],
+    "relations": {},
+    "methods": {}
+}

@@ -1,0 +1,15 @@
+﻿{
+    "name": "JobExecution",
+    "base": "PersistedModel",
+    "idinjection": true,
+    "strict": false,
+    "description": "This model stores Job-Execution details",
+    "options": {
+        "isFrameworkModel": true
+    },
+    "properties": {
+    },
+    "validations": [],
+    "relations": {},
+    "methods": {}
+}
