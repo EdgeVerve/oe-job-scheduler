@@ -5,7 +5,7 @@ var hostname = os.hostname();
 var myInstanceID = uuidv4();
 var port;
 var log = require('oe-logger')('job-scheduler.boot');
-var masterJobExecutor = require('../../../oe-master-job-executor/lib/master-job-executor');
+var masterJobExecutor = require('oe-master-job-executor');
 var masterJob = require('../../lib/jobScheduler.js');
 var TAG = 'BOOT-JOB-SCHEDULER: ';
 var JobRunner = loopback.getModelByType('JobRunner');
@@ -15,10 +15,11 @@ var options = {
 };
 var JR_HEARTBEAT_INTERVAL = 20000;
 var JR_TOLERANCE = 25000;
-var JR_STALE_INTERVAL = 360000;
+var JR_STALE_INTERVAL = 15000;
 var BECOME_RUNNER_RETRY_INTERVAL = 60000;
 
 module.exports = function startJobScheduler(server, callback) {
+    
     port = server.get('port');
 
     deleteStaleRunners();
