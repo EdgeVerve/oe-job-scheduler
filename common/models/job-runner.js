@@ -7,7 +7,7 @@
 
 var loopback = require('loopback');
 var logger = require('oe-logger');
-var log = logger('job-runner');
+var log = logger('jobRunner');
 var TAG = 'JOB-RUNNER: ';
 var options = {
     ignoreAutoScope: true,
@@ -17,9 +17,9 @@ var options = {
 module.exports = function JobRunnerFn(JobRunner) {
 
     JobRunner.runJob = function runJob(jobID, executionID, options, cb) {
-        log.info(TAG, 'Running '+ jobID + '-' + executionID +' on this Runner');
-        execute(executionID);
-        cb(null, {message: 'Job Started'});
+        log.debug(TAG, 'Running '+ jobID + '-' + executionID.substring(30) +' on this Runner');
+        execute(executionID, cb);
+        //cb(null, {message: 'Job Started'});
     };
 
     JobRunner.remoteMethod('runJob', {
@@ -36,30 +36,34 @@ module.exports = function JobRunnerFn(JobRunner) {
 };
 
 
-function execute(executionID) {
+function execute(executionID, cb) {
     var JobExecution = loopback.getModelByType('JobExecution'); 
     JobExecution.findOne({where: {executionID: executionID}}, options, function findCb(err, execJob) {
-        if(err) log.error('Could not fetch job with executionID ' + executionID + JSON.stringify(err));
+        if(err) {
+            log.error('Could not fetch job with executionID ' + executionID + JSON.stringify(err));
+            cb(err, null);
+        }
         else {
             var mdl = execJob.mdl;
             var fn = execJob.fn;
             if(!mdl) {
                 log.error(TAG, 'No module found for executionID ' + executionID);
-                return;
+                return cb(new Error('No module found for executionID ' + executionID), null);
             }
             if(!fn) {
                 log.error(TAG, 'No function found for executionID ' + executionID);
-                return;
+                return cb(new Error('No function found for executionID ' + executionID), null);
             }
             try {
                 var m = require('../../../../' + mdl);
                 if(!m[fn]) {
                     log.error(TAG, 'Function ' + fn + ' not found in module ' + mdl);
-                    return;
+                    return cb(new Error('Function ' + fn + ' not found in module ' + mdl), null);
                 }
                 m[fn](executionID);
+                cb(null, 'OK');
             } catch(e) {
-                log.error(TAG, 'Could not execute ' + mdl + '.' + fn + ' ' + JSON.stringify(e));
+                cb(e, null);
             }
         }
     }); 

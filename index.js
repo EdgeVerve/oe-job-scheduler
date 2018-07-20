@@ -1,5 +1,5 @@
 var loopback = require('loopback');
-var log = require('oe-logger')('oe-job-scheduler');
+var log = require('oe-logger')('oeJobScheduler');
 var TAG = 'OE-JOB-SCHEDULER: ';
 var options = {
     ignoreAutoScope: true,
@@ -23,7 +23,8 @@ function setExecutionState(executionID, state, completionStatus, cb) {
             cb(err);
         }
         else {
-            var data = { state: state, lastUpdateTime: Date.now()};
+            var now = Date.now();
+            var data = { state: state, lastUpdateTime: new Date(now)};
             if(completionStatus) data.completionStatus = completionStatus;
             
             execJob.updateAttributes(data, options, function (err, results) {
@@ -52,7 +53,8 @@ function markJobCompleted(executionID, completionStatus, cb) {
             cb(err);
         }
         else {
-            var data = { state: 'COMPLETED', lastUpdateTime: Date.now()};
+            var now = Date.now();
+            var data = { state: 'COMPLETED', completionTime: new Date(now), lastUpdateTime: new Date(now)};
             if(completionStatus) data.completionStatus = completionStatus;
             execJob.updateAttributes(data, options, function (err, results) {
                 if (!err && results) {
