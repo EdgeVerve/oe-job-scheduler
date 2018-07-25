@@ -13,18 +13,24 @@ var options = {
     ignoreAutoScope: true,
     fetchAllScopes: true
 };
-var JR_HEARTBEAT_INTERVAL = 20000;
-var JR_TOLERANCE = 25000;
-var JR_STALE_INTERVAL = 15000;
-var BECOME_RUNNER_RETRY_INTERVAL = 60000;
-var MAX_JR_HEARTBEAT_RETRY_COUNT = 3;
+var config;
+var confPath = '../../../oe-cloud/server/config.js';
+try {
+    config = require(confPath).jobScheduler;
+} catch(e) { log.warn(TAG, e.message); }
+
+var JR_HEARTBEAT_INTERVAL = process.env.JOB_RUNNER_HEARTBEAT_INTERVAL || config && config.runnerHeartbeatInterval || 20000;
+var JR_TOLERANCE = JR_HEARTBEAT_INTERVAL * 3;
+var JR_CLEANUP_INTERVAL = process.env.JOB_RUNNER_CLEANUP_INTERVAL || config && config.runnerCleanupInterval || 15000;
+var JR_RETRY_INTERVAL = process.env.JOB_RUNNER_RETRY_INTERVAL || config && config.runnerRetryInterval || 60000;
+var JR_MAX_HEARTBEAT_RETRY_COUNT = process.env.JOB_RUNNER_MAX_HEARTBEAT_RETRY_COUNT || config && config.runnerMaxHeartbeatRetryCount || 3;
 
 module.exports = function startJobScheduler(server, callback) {
     
     port = server.get('port');
 
     deleteStaleRunners();
-    setInterval(deleteStaleRunners, JR_STALE_INTERVAL);
+    setInterval(deleteStaleRunners, JR_CLEANUP_INTERVAL);
 
     if(process.env.IS_JOB_RUNNER && (process.env.IS_JOB_RUNNER ==='true' || process.env.IS_JOB_RUNNER ==='TRUE')) {
         becomeRunner();
@@ -58,8 +64,8 @@ function becomeRunner() {
             log.info(TAG, 'I am a JobRunner (' + hostname + ':' + port + ')');
             startHeartbeat(res);
         } else {
-            log.warn(TAG, 'Could not create JobRunner record. Will try again in ' + BECOME_RUNNER_RETRY_INTERVAL/1000 + ' sec');
-            setTimeout(becomeRunner, BECOME_RUNNER_RETRY_INTERVAL);
+            log.warn(TAG, 'Could not create JobRunner record. Will try again in ' + JR_RETRY_INTERVAL/1000 + ' sec');
+            setTimeout(becomeRunner, JR_RETRY_INTERVAL);
         }
     });
 }
@@ -76,7 +82,7 @@ function startHeartbeat(jobRunner) {
                 retries = 0;
                 log.debug(TAG, 'Updated JobRunner '+ hostname + ':' + port +' Heartbeat ' + results.heartbeatTime);
             } else {
-                if(++retries > MAX_JR_HEARTBEAT_RETRY_COUNT) {
+                if(++retries > JR_MAX_HEARTBEAT_RETRY_COUNT) {
                     clearInterval(hb); 
                     log.warn(TAG, 'Could not update JobRunner '+ hostname + ':' + port +' Heartbeat.');
                     becomeRunner();
