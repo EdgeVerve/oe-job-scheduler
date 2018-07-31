@@ -21,19 +21,18 @@ function setExecutionState(executionID, state, completionStatus, cb) {
         if(err) { 
             log.error(TAG, 'Could not set state for executionID ' + executionID + ' to '+ state +': ' + JSON.stringify(err));
             cb(err);
-        }
-        else {
+        } else {
             var now = Date.now();
             var data = { state: state, lastUpdateTime: new Date(now)};
             if(completionStatus) data.completionStatus = completionStatus;
             
             execJob.updateAttributes(data, options, function (err, results) {
                 if (!err && results) {
-                    log.debug(TAG, 'state for executionID ' + executionID + ' set to '+ state);
+                    log.debug(TAG, 'state for execution ' + execJob.jobID + '-' + execJob.execID + ' set to '+ state);
                     cb();
                 } else {
-                    log.error(TAG, 'Could not set state for executionID ' + executionID + ' to '+ state);
-                    cb(new Error('Could not set state for executionID ' + executionID + ' to '+ state));
+                    log.error(TAG, 'Could not set state for execution ' + execJob.jobID + '-' + execJob.execID + ' to '+ state + ' ' + JSON.stringify(err));
+                    cb(new Error('Could not set state for execution ' + execJob.jobID + '-' + execJob.execID + ' to '+ state + ' ' + JSON.stringify(err)));
                 }
             });
         }
