@@ -19,7 +19,6 @@ module.exports = function JobRunnerFn(JobRunner) {
     JobRunner.runJob = function runJob(jobID, executionID, options, cb) {
         log.debug(TAG, 'Running '+ jobID + '-' + executionID.substring(30) +' on this Runner');
         execute(executionID, cb);
-        //cb(null, {message: 'Job Started'});
     };
 
     JobRunner.remoteMethod('runJob', {
@@ -33,6 +32,7 @@ module.exports = function JobRunnerFn(JobRunner) {
             root: true
         }]
     });
+
 };
 
 
