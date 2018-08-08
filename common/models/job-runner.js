@@ -8,15 +8,16 @@
 var loopback = require('loopback');
 var logger = require('oe-logger');
 var log = logger('jobRunner');
-var TAG = 'JOB-RUNNER: ';
+var TAG = 'job-runner.js: ';
 var options = {
     ignoreAutoScope: true,
     fetchAllScopes: true
 };
 
 module.exports = function JobRunnerFn(JobRunner) {
-
+    var TAG = 'JobRunnerFn(JobRunner): ';
     JobRunner.runJob = function runJob(jobID, executionID, options, cb) {
+        var TAG = 'runJob(jobID, executionID, options, cb): ';
         log.debug(TAG, 'Running '+ jobID + '-' + executionID.substring(30) +' on this Runner');
         execute(executionID, cb);
     };
@@ -37,6 +38,7 @@ module.exports = function JobRunnerFn(JobRunner) {
 
 
 function execute(executionID, cb) {
+    var TAG = 'execute(executionID, cb): ';
     var JobExecution = loopback.getModelByType('JobExecution'); 
     JobExecution.findOne({where: {executionID: executionID}}, options, function findCb(err, execJob) {
         if(err) {

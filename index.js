@@ -1,12 +1,13 @@
 var loopback = require('loopback');
 var log = require('oe-logger')('oeJobScheduler');
-var TAG = 'OE-JOB-SCHEDULER: ';
+var TAG = 'index.js: ';
 var options = {
     ignoreAutoScope: true,
     fetchAllScopes: true
 };
 
 function updateExecutionHeartbeat(executionID, completionStatus, cb) {
+    var TAG = 'updateExecutionHeartbeat(executionID, completionStatus, cb): ';
     var state = 'RUNNING';
     if(!cb && typeof completionStatus === 'function') {
         cb = completionStatus;
@@ -16,6 +17,7 @@ function updateExecutionHeartbeat(executionID, completionStatus, cb) {
 }
 
 function setExecutionState(executionID, state, completionStatus, cb) {
+    var TAG = 'setExecutionState(executionID, state, completionStatus, cb): ';
     var JobExecution = loopback.getModelByType('JobExecution'); 
     JobExecution.findOne({where: {executionID: executionID}}, options, function findCb(err, execJob) {
         if(err) { 
@@ -41,6 +43,7 @@ function setExecutionState(executionID, state, completionStatus, cb) {
 
 
 function markJobCompleted(executionID, completionStatus, cb) {
+    var TAG = 'markJobCompleted(executionID, completionStatus, cb): ';
     if(!cb && typeof completionStatus === 'function') {
         cb = completionStatus;
         completionStatus = null;
