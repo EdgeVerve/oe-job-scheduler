@@ -164,3 +164,6 @@ jobScheduler.runnerRetryDelay              JOB_RUNNER_HEARTBEAT_RETRY_DELAY     
 ----------------------------------------------------------------------------------------------------------------------------------------
 </pre>
 
+
+The *oe-job-scheduler* module is tested with the default values and it should work with the defaults, i.e., without any overriding configuration via the
+methods mentioned above. For most scheduling needs, the defaults should suffice.
