@@ -127,13 +127,40 @@ The following are the configuration parameters:
 
 <pre>
 ----------------------------------------------------------------------------------------------------------------------------------------
-config.json setting                       Env Variable            type          default    Description          
+config.json setting                         Env Variable                         type          default    Description          
 ----------------------------------------------------------------------------------------------------------------------------------------
-jobScheduler.runnerUpdateInterval
-jobScheduler.
-jobScheduler.
-jobScheduler.
-jobScheduler.
+jobScheduler.runnerUpdateInterval          JOB_RUNNER_UPDATE_INTERVAL            number (ms)   15000      Frequency at which a global array containing 
+                                                                                                          available runners is updated
+                                                                                                          
+jobScheduler.scheduleNewJobsInterval       SCHEDULE_NEW_JOBS_INTERVAL            number (ms)   30000      Frequency at which the Jobs table is polled for
+                                                                                                          new enabled jobs to schedule
+                                                                                                          
+jobScheduler.defunctJobsRetryInterval      DEFUNCT_JOBS_RETRY_INTERVAL           number (ms)   30000      Frequency at which JobExecution table is checked for - 
+                                                                                                          1. jobs that are defunct, i.e., jobs which are
+                                                                                                             neither COMPLETED nor FAILED, whose heartbeats 
+                                                                                                             are older than DEFUNCT_JOB_TOLERANCE which is
+                                                                                                             equal to (3 * DEFUNCT_JOBS_RETRY_INTERVAL)
+                                                                                                          2. jobs that are missed due to manual stoppage
+                                                                                                             or application being brought down.
+                                                                                                          
+jobScheduler.jobTriggerFailRetryDelay      JOB_TRIGGER_FAIL_RETRY_DELAY          number (ms)   5000       The delay after which a retry of a retry-able job is
+                                                                                                          performed, after an unsuccessful attempt to trigger it
+                                                                                                          
+jobScheduler.runnerHeartbeatInterval       JOB_RUNNER_HEARTBEAT_INTERVAL         number (ms)   20000      Frequency at which the job runner heartbeat is sent
 
+jobScheduler.runnerCleanupInterval         JOB_RUNNER_CLEANUP_INTERVAL           number (ms)   15000      Frequency at which the JobRunner table is checked for
+                                                                                                          stale runners for deletion
+                                                                                                          
+jobScheduler.runnerRetryInterval           JOB_RUNNER_RETRY_INTERVAL             number (ms)   60000      Frequency at which an app-instance tries to become a
+                                                                                                          job-runner if it fails to become one due to any reason
+                                                                                                          
+jobScheduler.runnerMaxHeartbeatRetryCount  JOB_RUNNER_MAX_HEARTBEAT_RETRY_COUNT  number        3          The maximum number of job-runner heartbeat failures 
+                                                                                                          that are tolerated before discarding a job-runner and 
+                                                                                                          trying to become a new job-runner again
+                                                                                                          
+jobScheduler.runnerRetryDelay              JOB_RUNNER_HEARTBEAT_RETRY_DELAY      number (ms)   2000       Frequency at which job-runner heartbeat is updated in  
+                                                                                                          the JobRunner table
 
+----------------------------------------------------------------------------------------------------------------------------------------
+</pre>
 
