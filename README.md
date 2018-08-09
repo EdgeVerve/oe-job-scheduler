@@ -22,6 +22,10 @@ To prevent jobs getting scheduled multiple times in a clustered environment, the
 is used to schedule the jobs. **oe-master-job-executor** also ensures that the *Job Sheduler* is restarted on another app-instance 
 if the app-instance currently handling the scheduling goes down for any reason.
 
+An overview of the implementation in the form of a function call-stack is available [here](http://evgit/oecloud.io/oe-job-scheduler/blob/master/JobScheduler.xlsx). 
+Mouseover on each function-block for additional details.
+
+
 ## Features
 The *Job Scheduler* has the following features - 
 
