@@ -19,7 +19,7 @@ The **oe-job-scheduler** uses this function to schedule all unscheduled and enab
 This happens on application startup.
 
 To prevent jobs getting scheduled multiple times in a clustered environment, the [**oe-master-job-executor**](http://evgit/oecloud.io/oe-master-job-executor) module
-is used to schedule the jobs. **oe-master-job-executor** also ensures that the *Jobs Sheduler* is restarted on another app-instance 
+is used to schedule the jobs. **oe-master-job-executor** also ensures that the *Job Sheduler* is restarted on another app-instance 
 if the app-instance currently handling the scheduling goes down for any reason.
 
 ## Features
@@ -113,9 +113,27 @@ This job can be scheduled by POSTing the following data into the ``Job`` table o
 }
 ```
 
+## Configuration
+The *oe-job-scheduler* module can be configured via -
 
+1. server/config.json
+2. environment variables
 
+with the following priority:  2 > 1
 
+Priority is applicable on a per-parameter basis.
+
+The following are the configuration parameters:
+
+<pre>
+----------------------------------------------------------------------------------------------------------------------------------------
+config.json setting                       Env Variable            type          default    Description          
+----------------------------------------------------------------------------------------------------------------------------------------
+jobScheduler.runnerUpdateInterval
+jobScheduler.
+jobScheduler.
+jobScheduler.
+jobScheduler.
 
 
 
