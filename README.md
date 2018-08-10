@@ -120,10 +120,11 @@ This job can be scheduled by POSTing the following data into the ``Job`` table o
 ## Configuration
 The *oe-job-scheduler* module can be configured via -
 
-1. server/config.json
-2. environment variables
+1. Default values in code (no configuration)
+2. server/config.json
+3. environment variables
 
-with the following priority:  2 > 1
+with the following priority:  3 > 2 > 1
 
 Priority is applicable on a per-parameter basis.
 
