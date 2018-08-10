@@ -49,7 +49,8 @@ To get the *Job Scheduler* feature, the following changes need to be done in the
 1. The [**oe-master-job-executor**](http://evgit/oecloud.io/oe-master-job-executor) node module and this (**oe-job-scheduler**) module 
    needs to be added as application  ``package.json`` dependencies. 
 2. The above modules need to be added to the `server/app-list.json` file in the app.
-3. The environment variable ``IS_JOB_RUNNER`` should be set with a value of ``true`` before the application is started. 
+3. There should be one or more job functions exported from a node module which is part of the application.
+4. The environment variable ``IS_JOB_RUNNER`` should be set with a value of ``true`` before the application is started. 
    <pre>
    C:\> set IS_JOB_RUNNER=true   ## Windows
    C:\> node .
@@ -59,7 +60,6 @@ To get the *Job Scheduler* feature, the following changes need to be done in the
    $ node .
    </pre>
    In case of an application cluster, this variable with the stated value should be set in at least one app-instance.
-4. There should be one or more job functions exported from a node module which is part of the application.
 
 
 
