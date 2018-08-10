@@ -112,16 +112,16 @@ The code snippets below show how steps 1 and 2 can be done:
 
 ## Usage
 Consider a job which is encapsulated in a function called ``jobFunc``, which is exported from a node module called ``jobs/end-of-day-jobs.js``.
-Also, consider that this job needs to run at 11:30:15 pm each day.
+Also, consider that this job needs to run at 11:15 pm each day.
 
-The cron string for this schedule would be ``"15 30 23 * *"``
+The cron string for this schedule would be ``"15 23 * * *"``
 
 This job can be scheduled by POSTing the following data into the ``Job`` table of the application database:
 
 ```javascript
 {
     "jobID" : "EOD.JobFunc",           // Mandatory. Arbitrary unique string identifier
-    "schedule" : "15 30 23 * *",       // Schedule specification in cron format. Will be used if specified. Will use 'interval' if not specified.
+    "schedule" : "15 23 * * *",       // Schedule specification in cron format. Will be used if specified. Will use 'interval' if not specified.
 //  "interval": 86400,                 // Ignored if 'schedule' is specified
     "enabled" : true,                  // Optional. Default: false. Needs to be true to actually schedule this job
     "mdl" : "jobs/end-of-day-jobs",    // Mandatory. The node module that exports the job function to be executed at the scheduled time
