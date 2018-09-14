@@ -7,9 +7,7 @@
     "lib": "lib",
     "test": "test"
   },
-  "dependencies": {
-    "oe-master-job-executor": "git+http://10.73.97.24/oecloud.io/oe-master-job-executor.git#master"
-  },
+  "dependencies": {},
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
