@@ -111,10 +111,54 @@ The code snippets below show how steps 1 and 2 can be done:
 
 
 ## Usage
-Consider a job which is encapsulated in a function called ``jobFunc``, which is exported from a node module called ``jobs/end-of-day-jobs.js``.
-Also, consider that this job needs to run at 11:15 pm each day.
+Consider a job which is encapsulated in a function called ``jobFunc``, which is exported from a node module called ``jobs/end-of-day-jobs.js``,
+where ``jobs`` is a folder in the root of the application.
 
-The cron string for this schedule would be ``"15 23 * * *"``
+A sample ``jobs/end-of-day-jobs.js`` file is shown below: 
+
+```javascript
+var jobSch = require('oe-job-scheduler');
+
+var completionStatus = 0;
+
+function jobFunc(executionID) {
+
+    // Do some work
+    someArray.forEach(function(obj, i) {
+        // ...
+        // ...
+        // ...
+        // ...
+        
+        // Call the heartbeat function with executionID and optionally a completion status and callback function
+        // This needs to be done repeatedly and with sufficient frequency. It need not be called from a loop always.
+        // It can be called from a setInterval timer as well. In that case, take care to clearInterval at the end of
+        // the job, or if any exception happens.
+        jobSch.heartbeat(executionID, '' + completionStatus+=i, function () {});
+    });
+    
+    // Call the done function once at the end of the job
+    jobSch.done(executionID, '' + completionStatus, function () {});
+    
+    
+}
+
+// Export the function(s)
+module.exports = {
+    jobFunc: jobFunc
+}
+
+```
+
+As seen in the above sample job, the job function (``jobFunc``, in this case) needs to let the *job-scheduler* know that it is still active by calling 
+the ``heartbeat()`` function exposed by the *job-scheduler* module. Otherwise, the job will be marked as **failed**, and it will be retried if it is 
+configured to be retriable.
+
+Similarly, a ``done()`` function needs to be called once at the end of the job execution.
+
+The ``completionStatus`` is any string representing the current status of the job execution. It could be a percentage of completion, for example.
+
+Consider that this job needs to run at 11:15 pm each day. The cron string for this schedule would be ``"15 23 * * *"``
 
 This job can be scheduled by POSTing the following data into the ``Job`` table of the application database:
 
