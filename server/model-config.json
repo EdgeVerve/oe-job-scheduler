@@ -1,21 +1,21 @@
 {
-  "_meta": {
-    "sources": [
-      "../common/models"
-    ],
-    "mixins": [
-    ]
-  },
-  "Job": {
-    "dataSource": "db",
-    "public": true
-  },
-  "JobRunner": {
-    "dataSource": "db",
-    "public": true
-  },
-  "JobExecution": {
-    "dataSource": "db",
-    "public": true
-  }
+    "_meta": {
+        "sources": [
+            "../common/models"
+        ],
+        "mixins": []
+    },
+    "Job": {
+        "dataSource": "db",
+        "public": true
+    },
+    "JobRunner": {
+        "dataSource": "db",
+        "public": true
+    },
+    "JobExecution": {
+        "dataSource": "db",
+        "public": true
+    }
+
 }

@@ -1,22 +1,11 @@
 # oe-job-scheduler
 
-## Table of Contents
-- [Need](#Need)
-- [Implementation](#Implementation)
-- [Features](#Features)
-- [Setup](#Setup)
-- [Usage](#Usage)
-- [Configuration](#Configuration)
-
-
-<a name="Need"></a> 
 ## Need
 Enterprise applications often require to run jobs - batch or otherwise - automatically, at pre-defined times and/or intervals. 
 Such jobs are run as a background process, and may need dedicated hardware/infrastructure with its own load balancing. Typically,
 these jobs don't share processing infrastructure with that of OLTP app-instances so as to minimize the impact of the job's load 
 on the online performance of the application.
 
-<a name="Implementation"></a> 
 ## Implementation
 The **oe-job-scheduler** module provides the infrastructure for catering to the above need. It is implemented as an **app-list**
 module for **oe-Cloud** based applications. 
@@ -29,14 +18,14 @@ The cron-like scheduling functionality is obtained using the open-source [**node
 The **oe-job-scheduler** uses this function to schedule all unscheduled and enabled jobs available in a database table called **Job**.
 This happens on application startup.
 
-To prevent jobs getting scheduled multiple times in a clustered environment, the [**oe-master-job-executor**](http://evgit/oecloud.io/oe-master-job-executor) module
+To prevent jobs getting scheduled multiple times in a clustered environment, the [**oe-master-job-executor**](http://evgit/oec-next/oe-master-job-executor) module
 is used to schedule the jobs. **oe-master-job-executor** also ensures that the *Job Sheduler* is restarted on another app-instance 
 if the app-instance currently handling the scheduling goes down for any reason.
 
-An overview of the implementation in the form of a function call-stack is available [here](http://evgit/oecloud.io/oe-job-scheduler/blob/master/JobScheduler.xlsx). 
+An overview of the implementation in the form of a function call-stack is available [here](http://evgit/oec-next/oe-job-scheduler/blob/master/JobScheduler.xlsx). 
 Mouseover on each function-block for additional details.
 
-<a name="Features"></a>
+
 ## Features
 The *Job Scheduler* has the following features - 
 
@@ -53,11 +42,11 @@ The *Job Scheduler* has the following features -
 11. Executes jobs that are missed due to manual stoppage (see above) or application being down
 12. Logging of all job executions with additional meta-data about execution into the database.
 
-<a name="Setup"></a>
+
 ## Setup
 To get the *Job Scheduler* feature, the following changes need to be done in the *oe-Cloud* based application:
 
-1. The [**oe-master-job-executor**](http://evgit/oecloud.io/oe-master-job-executor) node module and this (**oe-job-scheduler**) module 
+1. The [**oe-master-job-executor**](http://evgit/oec-next/oe-master-job-executor) node module and this (**oe-job-scheduler**) module 
    needs to be added as application  ``package.json`` dependencies. 
 2. The above modules need to be added to the `server/app-list.json` file in the app.
 3. There should be one or more job functions exported from a node module which is part of the application.
@@ -85,10 +74,8 @@ The code snippets below show how steps 1 and 2 can be done:
        ...
        ...
        ...
-       "oe-workflow": "git+http://evgit/oecloud.io/oe-workflow.git#master",
-       <B>"oe-master-job-executor": "git+http://evgit/oecloud.io/oe-master-job-executor.git#master",
-       "oe-job-scheduler": "git+http://evgit/oecloud.io/oe-job-scheduler.git#master",</B>
-       "passport": "0.2.2",
+       <B>"oe-master-job-executor": "git+http://evgit/oec-next/oe-master-job-executor.git#master",
+       "oe-job-scheduler": "git+http://evgit/oec-next/oe-job-scheduler.git#master",</B>
        ...
        ...
 </pre>
@@ -120,7 +107,7 @@ The code snippets below show how steps 1 and 2 can be done:
 ]
 </pre>
 
-<a name="Usage"></a>
+
 ## Usage
 Consider a job which is encapsulated in a function called ``jobFunc``, which is exported from a node module called ``jobs/end-of-day-jobs.js``,
 where ``jobs`` is a folder in the root of the application.
@@ -186,7 +173,6 @@ This job can be scheduled by POSTing the following data into the ``Job`` table o
 }
 ```
 
-<a name="Configuration"></a>
 ## Configuration
 The *oe-job-scheduler* module can be configured via -
 
