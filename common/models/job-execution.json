@@ -2,12 +2,104 @@
     "name": "JobExecution",
     "base": "PersistedModel",
     "idinjection": true,
-    "strict": false,
+    "strict": true,
     "description": "This model stores Job-Execution details",
     "options": {
         "isFrameworkModel": true
     },
     "properties": {
+        "executionID": {
+            "type": "string",
+            "required": false
+        },
+        "execID": {
+            "type": "string",
+            "required": false
+        },
+        "jobID": {
+            "type": "string",
+            "required": false
+        },
+        "schedule": {
+            "type": "string",
+            "required": false
+        },
+        "mdl": {
+            "type": "string",
+            "required": false
+        },
+        "fn": {
+            "type": "string",
+            "required": false
+        },
+        "enabled": {
+            "type": "boolean",
+            "required": false
+        },
+        "maxRetryCount": {
+            "type": "number",
+            "required": false
+        },
+        "retryCount": {
+            "type": "number",
+            "required": false
+        },
+        "retryEnabled": {
+            "type": "boolean",
+            "required": false
+        },
+        "retryReason": {
+            "type": "string",
+            "required": false
+        },
+        "failTime": {
+            "type": "date",
+            "required": false
+        },
+        "failReason": {
+            "type": "string",
+            "required": false
+        },
+        "scheduleTime": {
+            "type": "date",
+            "required": false
+        },
+        "lastUpdateTime": {
+            "type": "date",
+            "required": false
+        },
+        "createdTime": {
+            "type": "date",
+            "required": false
+        },
+        "state": {
+            "type": "string",
+            "required": false
+        },
+        "type": {
+            "type": "string",
+            "required": false
+        },
+        "triggerTime": {
+            "type": "date",
+            "required": false
+        },
+        "runner": {
+            "type": "string",
+            "required": false
+        },
+        "completionStatus": {
+            "type": "string",
+            "required": false
+        },
+        "completionTime": {
+            "type": "date",
+            "required": false
+        },
+        "nextTriggerTime": {
+            "type": "date",
+            "required": false
+        }
     },
     "validations": [],
     "relations": {},

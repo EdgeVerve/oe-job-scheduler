@@ -2,12 +2,52 @@
     "name": "Job",
     "base": "PersistedModel",
     "idinjection": true,
-    "strict": false,
+    "strict": true,
     "description": "This model stores Job details",
     "options": {
         "isFrameworkModel": true
     },
     "properties": {
+        "jobID": {
+            "type": "string",
+            "required": true
+        },
+        "enabled": {
+            "type": "boolean",
+            "required": true,
+            "default": true
+        },
+        "schedule": {
+            "type": "string",
+            "required": false
+        },
+        "interval": {
+            "type": "number",
+            "required": false
+        },
+        "mdl": {
+            "type": "string",
+            "required": true
+        },
+        "fn": {
+            "type": "string",
+            "required": true
+        },
+        "retryEnabled": {
+            "type": "boolean",
+            "required": true,
+            "default": true
+        },
+        "maxRetryCount": {
+            "type": "number",
+            "required": true,
+            "default": 2
+        },
+        "scheduled": {
+            "type": "boolean",
+            "required": true,
+            "default": false
+        }
     },
     "validations": [],
     "relations": {},
