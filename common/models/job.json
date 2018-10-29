@@ -33,6 +33,10 @@
             "type": "string",
             "required": true
         },
+        "parameter": {
+            "type": "object",
+            "required": false
+        },
         "retryEnabled": {
             "type": "boolean",
             "required": true,

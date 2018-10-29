@@ -65,6 +65,7 @@ function execute(executionID, cb) {
     } else {
       var mdl = execJob.mdl;
       var fn = execJob.fn;
+      var parameter = execJob.parameter;
       /* istanbul ignore if */
       if (!mdl) {
         // console.log('No module found for executionID ' + executionID);
@@ -87,7 +88,7 @@ function execute(executionID, cb) {
           log.error(TAG, 'Function ' + fn + ' not found in module ' + mdl);
           return cb(new Error('Function ' + fn + ' not found in module ' + mdl), null);
         }
-        m[fn](executionID);
+        m[fn](executionID, parameter);
         cb(null, 'OK');
       } catch (e) {
         // istanbul ignore next

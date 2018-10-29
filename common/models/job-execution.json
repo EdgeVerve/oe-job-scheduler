@@ -32,6 +32,10 @@
             "type": "string",
             "required": false
         },
+        "parameter": {
+            "type": "object",
+            "required": false
+        },
         "enabled": {
             "type": "boolean",
             "required": false
