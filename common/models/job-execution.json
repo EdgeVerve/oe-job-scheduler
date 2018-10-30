@@ -93,7 +93,7 @@
             "required": false
         },
         "completionStatus": {
-            "type": "string",
+            "type": "object",
             "required": false
         },
         "completionTime": {
