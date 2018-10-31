@@ -91,6 +91,22 @@ function markJobFailed(executionID, completionStatus, cb) {
   markJobWithStatus(executionID, 'FAILED', completionStatus, cb);
 }
 
+
+function markJobSkipped(executionID, completionStatus, cb) {
+  if (!cb && typeof completionStatus === 'function') {
+    cb = completionStatus;
+    completionStatus = null;
+  }
+  /* istanbul ignore else */
+  if (completionStatus && ( typeof completionStatus === 'number' || typeof completionStatus === 'string')) {
+    // eslint-disable-next-line no-console
+    console.log('WARNING: Completion status for executionID ' + executionID + ' is provided as ' + (typeof completionStatus) + '. Needs to be Object.' );
+    completionStatus = { completionStatus: completionStatus};
+  }
+  markJobWithStatus(executionID, 'SKIPPED', completionStatus, cb);
+}
+
+
 function markJobWithStatus(executionID, state, completionStatus, cb) {
   var TAG = 'markJobWithStatus(executionID, completionStatus, cb): ';
   var JobExecution = loopback.getModelByType('JobExecution');
@@ -121,14 +137,14 @@ function markJobWithStatus(executionID, state, completionStatus, cb) {
       execJob.updateAttributes(data, options, function (err, results) {
         /* istanbul ignore else */
         if (!err && results) {
-          log.debug(TAG, execJob.jobID + '-' + execJob.execID + ' state updated to COMPLETED');
+          log.debug(TAG, execJob.jobID + '-' + execJob.execID + ' state updated to ' + state);
           cb();
-          eventEmitter.emit('markJobWithStatus', executionID, state);
+          eventEmitter.emit('markJobWithStatus', execJob.jobID, executionID, state);
         } else {
           // eslint-disable-next-line no-console
           console.error(err);
-          log.error(TAG, execJob.jobID + '-' + execJob.execID + ' state could not be updated to COMPLETED');
-          cb(new Error(execJob.jobID + '-' + execJob.execID + ' state could not be updated to COMPLETED'));
+          log.error(TAG, execJob.jobID + '-' + execJob.execID + ' state could not be updated to ' + state);
+          cb(new Error(execJob.jobID + '-' + execJob.execID + ' state could not be updated to ' + state));
         }
       });
     }
@@ -139,5 +155,6 @@ function markJobWithStatus(executionID, state, completionStatus, cb) {
 module.exports = {
   heartbeat: updateExecutionHeartbeat,
   done: markJobCompleted,
-  fail: markJobFailed
+  fail: markJobFailed,
+  skip: markJobSkipped
 };
