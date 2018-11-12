@@ -1,11 +1,21 @@
-# oe-job-scheduler
+## Table of Contents
+- [Need](#Need)
+- [Implementation](#Implementation)
+- [Features](#Features)
+- [Setup](#Setup)
+- [Usage](#Usage)
+- [Manual trigger of Jobs](#Manual trigger of Jobs)
+- [Configuration](#Configuration)
 
+
+<a name="Need"></a>
 ## Need
 Enterprise applications often require to run jobs - batch or otherwise - automatically, at pre-defined times and/or intervals. 
 Such jobs are run as a background process, and may need dedicated hardware/infrastructure with its own load balancing. Typically,
 these jobs don't share processing infrastructure with that of OLTP app-instances so as to minimize the impact of the job's load 
 on the online performance of the application.
 
+<a name="Implementation"></a>
 ## Implementation
 The **oe-job-scheduler** module provides the infrastructure for catering to the above need. It is implemented as an **app-list**
 module for **oe-Cloud** based applications. 
@@ -25,7 +35,7 @@ if the app-instance currently handling the scheduling goes down for any reason.
 An overview of the implementation in the form of a function call-stack is available [here](http://evgit/oecloud.io/oe-job-scheduler/blob/master/JobScheduler.xlsx). 
 Mouseover on each function-block for additional details.
 
-
+<a name="Features"></a>
 ## Features
 The *Job Scheduler* has the following features - 
 
@@ -38,11 +48,15 @@ The *Job Scheduler* has the following features -
 7. In a cluster, one can limit the scheduler to use specific app-instances by setting an environment variable
 8. Balances the job triggers on all available "runners" in a round-robin fashion (Load balancing)
 9. Facility for retry of defunct jobs and max-retry-count
-10. Can manually stop and restart the *Job Scheduler* and job executions by HTTP API call
+10. Can manually [stop and restart](http://evgit/oecloud.io/oe-master-job-executor/blob/master/README.md#Control) the *Job Scheduler* and job executions by HTTP API call
 11. Executes jobs that are missed due to manual stoppage (see above) or application being down
 12. Logging of all job executions with additional meta-data about execution into the database.
+13. Able to define arbitrary parameter object in the Job definition, to be passed to jobs at runtime
+14. Able to skip or fail a job execution by calling appropriate functions
+15. Able to trigger a defined job manually for immediate execution by function call or http request.
 
 
+<a name="Setup"></a>
 ## Setup
 To get the *Job Scheduler* feature, the following changes need to be done in the *oe-Cloud* based application:
 
@@ -107,7 +121,7 @@ The code snippets below show how steps 1 and 2 can be done:
 ]
 </pre>
 
-
+<a name="Usage"></a>
 ## Usage
 Consider a job which is encapsulated in a function called ``jobFunc``, which is exported from a node module called ``jobs/end-of-day-jobs.js``,
 where ``jobs`` is a folder in the root of the application.
@@ -117,26 +131,46 @@ A sample ``jobs/end-of-day-jobs.js`` file is shown below:
 ```javascript
 var jobSch = require('oe-job-scheduler');
 
-var completionStatus = 0;
+var completionStatus, percentage = 0, errors = false;
 
-function jobFunc(executionID) {
+function jobFunc(executionID, paramObj) {    // paramObj is an arbitrary parameter object defined 
+                                             // in the Job definition passed to the job at runtime
+                                             
+    // Optionally, you can check for conditions when this Job should not run, for e.g., 
+    // a holiday, and skip the Job execution using the skip() function as shown below
+    if( appUtil.holiday() ) {
+        jobSch.skip(executionID, { status: 0, msg: "Skipping as it is a holiday today"}, function () {});
+        return;  // It is important that you return to avoid executing the job despite calling skip()
+                 // Another way to do this is to use the else clause for the remainder of this Job function.
+    }
 
     // Do some work
-    someArray.forEach(function(obj, i) {
+    someArray.every(function(obj, i) {  // 'every' is used instead of 'forEach' as it allows breaking out if necessary
         // ...
         // ...
         // ...
         // ...
-        
         // Call the heartbeat function with executionID and optionally a completion status and callback function
         // This needs to be done repeatedly and with sufficient frequency. It need not be called from a loop always.
         // It can be called from a setInterval timer as well. In that case, take care to clearInterval at the end of
         // the job, or if any exception happens.
-        jobSch.heartbeat(executionID, '' + completionStatus+=i, function () {});
+        completionStatus = { status: percentage+=25 };
+        jobSch.heartbeat(executionID, completionStatus, function () {});
+        
+        
+        // Optionally, you can fail the current execution if some error occurs in the Job
+        // by calling the fail() function as follows
+        if( seriousError ) {
+            jobSch.fail(executionID, { status: percentage, msg: "Failing as seriousError occurred"}, function () {});
+            errors = true;
+            return false;  // break the loop to avoid executing the job despite calling skip()
+        } else return true; 
+
     });
     
-    // Call the done function once at the end of the job
-    jobSch.done(executionID, '' + completionStatus, function () {});
+    // Call the done function once at the end of a successful job execution
+    if(!errors)
+        jobSch.done(executionID, completionStatus, function () {});
     
     
 }
@@ -154,7 +188,7 @@ configured to be retriable.
 
 Similarly, a ``done()`` function needs to be called once at the end of the job execution.
 
-The ``completionStatus`` is any string representing the current status of the job execution. It could be a percentage of completion, for example.
+The ``completionStatus`` is any object representing the current status of the job execution. It could contain a percentage of completion, for example.
 
 Consider that this job needs to run at 11:15 pm each day. The cron string for this schedule would be ``"15 23 * * *"``
 
@@ -168,11 +202,49 @@ This job can be scheduled by POSTing the following data into the ``Job`` table o
     "enabled" : true,                  // Optional. Default: false. Needs to be true to actually schedule this job
     "mdl" : "jobs/end-of-day-jobs",    // Mandatory. The node module that exports the job function to be executed at the scheduled time
     "fn" : "jobFunc",                  // Mandatory. The job function to be executed at the scheduled time
+    "parameter": {"some": "value"},    // Optional. The value is any arbitrary object. This object will be passed to the Job at runtime
     "retryEnabled" : true,             // Optional. Default: false. Will retry this job 'maxRetryCount' times if set to true
     "maxRetryCount" : 2                // Optional. Default: 0. Will be used if 'retryEnabled' is true
 }
 ```
 
+<a name="Manual trigger of Jobs"></a>
+## Manual trigger of Jobs
+Jobs may be triggered manually once they are defined, using their JobIDs.
+This can be done either by calling a function or a HTTP endpoint.
+
+### Function
+The function call to trigger a job is as follows:
+
+```
+var jobSch = require('oe-job-scheduler');
+
+jobSch.executeJobNow(jobID, paramObj, cb);
+
+```
+where - <BR>
+`jobID` - The ID of the Job that needs to be triggered immediately<BR>
+`paramObj` - An optional parameter object (which will be passed to the Job function) which can override the parameter specified (if any) in the Job definition<BR>
+`cb` - A callback function which has an error argument. <BR>
+
+### HTTP endpoint
+The HTTP endpoint for triggering a job is as follows:
+
+```
+POST /JobRunners/runJobNow/<jobID>
+
+BODY
+{paramObj}
+
+```
+where - <BR>
+`jobID` - The ID of the Job that needs to be triggered immediately<BR>
+`{paramObj}` - An optional parameter object (which will be passed to the Job function) which can override the parameter specified (if any) in the Job definition<BR>
+
+The response will have any errors that may occur.
+
+
+<a name="Configuration"></a>
 ## Configuration
 The *oe-job-scheduler* module can be configured via -
 
