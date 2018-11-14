@@ -1,6 +1,7 @@
 var loopback = require('loopback');
 var log = require('oe-logger')('oeJobScheduler');
-var eventEmitter = require('./lib/jobScheduler').eventEmitter;
+var jobSch = require('./lib/jobScheduler');
+var eventEmitter = jobSch.eventEmitter;
 var options = {
   ignoreAutoScope: true,
   fetchAllScopes: true
@@ -140,6 +141,19 @@ function markJobWithStatus(executionID, state, completionStatus, cb) {
           log.debug(TAG, execJob.jobID + '-' + execJob.execID + ' state updated to ' + state);
           cb();
           eventEmitter.emit('markJobWithStatus', execJob.jobID, executionID, state);
+          if (state === 'COMPLETED' && execJob.successors && typeof execJob.successors.length === 'number') {
+            execJob.successors.forEach(function (successor) {
+              jobSch.executeJobNow(successor.jobID, successor.parameter ? successor.parameter : null, function (err) {
+                /* istanbul ignore if */
+                if (err) {
+                  // eslint-disable-next-line no-console
+                  console.error('Error while trying to execute successor ' + successor.jobID + ' of job ' + execJob.jobID);
+                  // eslint-disable-next-line no-console
+                  console.error(err);
+                }
+              });
+            });
+          }
         } else {
           // eslint-disable-next-line no-console
           console.error(err);

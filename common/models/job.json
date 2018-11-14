@@ -37,6 +37,10 @@
             "type": "object",
             "required": false
         },
+        "successors": {
+            "type": "array",
+            "required": false
+        },
         "retryEnabled": {
             "type": "boolean",
             "required": true,
