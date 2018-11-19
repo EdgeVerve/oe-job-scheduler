@@ -5,6 +5,7 @@
 - [Setup](#Setup)
 - [Usage](#Usage)
 - [Manual trigger of Jobs](#Manual trigger of Jobs)
+- [Chaining of Jobs](#Chaining of Jobs)
 - [Configuration](#Configuration)
 
 
@@ -154,8 +155,12 @@ function jobFunc(executionID, paramObj) {    // paramObj is an arbitrary paramet
         // This needs to be done repeatedly and with sufficient frequency. It need not be called from a loop always.
         // It can be called from a setInterval timer as well. In that case, take care to clearInterval at the end of
         // the job, or if any exception happens.
-        completionStatus = { status: percentage+=25 };
-        jobSch.heartbeat(executionID, completionStatus, function () {});
+        completionStatus = { status: percentage++ };
+        jobSch.heartbeat(executionID, completionStatus, function () {});   // IMPORTANT: This call to heartbeat() need not be inside the
+                                                                           // processing loop as shown here. You could have this repeatedly 
+                                                                           // called at a suitable frequency from a setInterval(), for example.
+                                                                           // In that case, be sure to to call clearInterval() just before you
+                                                                           // call jobSch.done()
         
         
         // Optionally, you can fail the current execution if some error occurs in the Job
@@ -244,6 +249,47 @@ where - <BR>
 The response will have any errors that may occur.
 
 
+<a name="Chaining of Jobs"></a>
+## Chaining of Jobs
+Jobs may be chained together, i.e., a job can name one or more successor jobs to be triggered automatically, once it (the job defining successor(s))
+completes successfully. This can be configured in the job definition of any Job.
+The following example defines two jobs - a starting job with jobID ``Job1`` and a successor with jobID ``Job2``.
+
+```javascript
+[{
+    "jobID" : "Job1",        // The main Job that is scheduled to run at 11:15 pm
+    "schedule" : "15 23 * * *",
+    "successors": [{jobID: "Job2", parameter: {some: "value", another: "one"}}],  // Array of successor objects, each element 
+                                                                                  // defining a jobID and an optional parameter object
+    "enabled" : true,
+    "mdl" : "jobs/end-of-day-jobs",
+    "fn" : "jobFunc1",   
+    "retryEnabled" : true,
+    "maxRetryCount" : 2 
+},
+{
+    "jobID": "Job2",        // The successor job 
+    "enabled": true,
+    "schedule": "chain",                // If this job is to be used only as a successor to other jobs, then
+                                        // the value needs to be "chain". Otherwise, it could be a regular cron schedule string.
+    "mdl": "jobs/end-of-day-jobs",
+    "fn": "jobFunc2",
+    "retryEnabled": true,
+    "maxRetryCount": 4
+}]
+
+```
+
+*Notes:*<BR>
+- There could be any number of successors defined for a Job.
+- All successors of a job execute in parallel, ie, in an async manner.
+- Optional parameters can be defined for the successor jobs, as shown in the example above
+- A successor job definition can be marked as a non-scheduled job, i.e., it is to be used only as a successor. This is done by setting the value of the ``schedule`` field to "chain"
+- A successor job can have its own successor(s)
+- Successor(s) are executed only if the triggering job calls the ``jobSch.done()`` function.
+
+
+
 <a name="Configuration"></a>
 ## Configuration
 The *oe-job-scheduler* module can be configured via -
@@ -300,3 +346,5 @@ jobScheduler.runnerRetryDelay              JOB_RUNNER_HEARTBEAT_RETRY_DELAY     
 
 The *oe-job-scheduler* module is tested with the default values and it should work with the defaults, i.e., without any overriding configuration via the
 methods mentioned above. For most scheduling needs, the defaults should suffice.
+
+
