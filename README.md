@@ -55,6 +55,7 @@ The *Job Scheduler* has the following features -
 13. Able to define arbitrary parameter object in the Job definition, to be passed to jobs at runtime
 14. Able to skip or fail a job execution by calling appropriate functions
 15. Able to trigger a defined job manually for immediate execution by function call or http request.
+16. Able to chain jobs for sequential execution
 
 
 <a name="Setup"></a>
