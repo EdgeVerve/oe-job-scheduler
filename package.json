@@ -1,6 +1,6 @@
 {
   "name": "oe-job-scheduler",
-  "version": "1.8.1",
+  "version": "1.8.0",
   "description": "This module is an app-list module for oe-Cloud based applications. It provides the ability to schedule jobs based on business rules for scheduling dates and times. It needs the app-list module oe-master-job-executor to work.",
   "main": "index.js",
   "dependencies": {
