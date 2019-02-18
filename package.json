@@ -1,23 +1,55 @@
 {
-  "name": "oe-job-scheduler",
-  "version": "1.8.0",
-  "description": "This module is an app-list module for oe-Cloud based applications. It provides the ability to schedule jobs based on business rules for scheduling dates and times. It needs the app-list module oe-master-job-executor to work.",
-  "main": "index.js",
-  "dependencies": {
-      "node-schedule": "^1.3.0"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@evgit:oecloud.io/oe-job-scheduler.git"
-  },
-  "keywords": [
-    "job",
-    "scheduler"
-  ],
-  "author": "Ajith Vasudevan",
-  "license": "MIT"
+    "name": "oe-job-scheduler",
+    "version": "2.0.1",
+    "description": "This module is an app-list module for oe-Cloud based applications. It provides the ability to schedule jobs based on business rules for scheduling dates and times. It needs the app-list module oe-master-job-executor to work.",
+    "engines": {
+        "node": ">=6"
+    },
+    "main": "index.js",
+    "scripts": {
+        "pretest": "npm install --no-optional",
+        "test": "mocha test/test.js",
+        "lint": "eslint .",
+        "fix-lint": "eslint --fix .",
+        "grunt-cover": "grunt test-with-coverage"
+    },
+    "dependencies": {
+        "node-schedule": "1.3.0",
+        "oe-master-job-executor": "git+http://10.73.97.24/oec-next/oe-master-job-executor.git#master"
+    },
+    "devDependencies": {
+        "babel-eslint": "7.2.3",
+        "chai": "3.4.1",
+        "chai-datetime": "1.4.0",
+        "chai-things": "0.2.0",
+        "chalk": "1.1.1",
+        "eslint": "4.10.0",
+        "grunt": "1.0.3",
+        "grunt-contrib-clean": "2.0.0",
+        "grunt-contrib-copy": "1.0.0",
+        "grunt-mkdir": "1.0.0",
+        "grunt-mocha-istanbul": "5.0.2",
+        "grunt-mocha-test": "0.13.3",
+        "istanbul": "0.4.5",
+        "mocha": "5.2.0",
+        "superagent-defaults": "0.1.14",
+        "supertest": "3.4.2",
+        "grunt-banner": "0.6.0",
+        "grunt-cli": "1.3.2",
+        "grunt-jsbeautifier": "0.2.13",
+        "loopback-connector-mongodb": "^3.4.2",
+        "oe-cloud": "git+http://evgit/oec-next/oe-cloud.git#master",
+        "oe-connector-postgresql": "git+http://evgit/oec-next/oe-connector-postgresql.git#master"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@evgit:oec-next/oe-job-scheduler.git"
+    },
+    "keywords": [
+        "oe-job-scheduler",
+        "job",
+        "scheduler"
+    ],
+    "author": "Ajith Vasudevan",
+    "license": "MIT"
 }

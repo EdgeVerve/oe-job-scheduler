@@ -47,6 +47,7 @@ module.exports = function JobRunnerFn(JobRunner) {
     }]
   });
 
+
   JobRunner.runJobNow = function runJobNow(jobID, params, opts, cb) {
     // istanbul ignore else
     if (!cb && typeof opts === 'function') cb = opts;

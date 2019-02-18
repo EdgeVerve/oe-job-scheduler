@@ -29,11 +29,11 @@ The cron-like scheduling functionality is obtained using the open-source [**node
 The **oe-job-scheduler** uses this function to schedule all unscheduled and enabled jobs available in a database table called **Job**.
 This happens on application startup.
 
-To prevent jobs getting scheduled multiple times in a clustered environment, the [**oe-master-job-executor**](http://evgit/oecloud.io/oe-master-job-executor) module
+To prevent jobs getting scheduled multiple times in a clustered environment, the [**oe-master-job-executor**](http://evgit/oec-next/oe-master-job-executor) module
 is used to schedule the jobs. **oe-master-job-executor** also ensures that the *Job Sheduler* is restarted on another app-instance 
 if the app-instance currently handling the scheduling goes down for any reason.
 
-An overview of the implementation in the form of a function call-stack is available [here](http://evgit/oecloud.io/oe-job-scheduler/blob/master/JobScheduler.xlsx). 
+An overview of the implementation in the form of a function call-stack is available [here](http://evgit/oec-next/oe-job-scheduler/blob/master/JobScheduler.xlsx). 
 Mouseover on each function-block for additional details.
 
 <a name="Features"></a>
@@ -49,7 +49,7 @@ The *Job Scheduler* has the following features -
 7. In a cluster, one can limit the scheduler to use specific app-instances by setting an environment variable
 8. Balances the job triggers on all available "runners" in a round-robin fashion (Load balancing)
 9. Facility for retry of defunct jobs and max-retry-count
-10. Can manually [stop and restart](http://evgit/oecloud.io/oe-master-job-executor/blob/master/README.md#Control) the *Job Scheduler* and job executions by HTTP API call
+10. Can manually [stop and restart](http://evgit/oec-next/oe-master-job-executor/blob/master/README.md#Control) the *Job Scheduler* and job executions by HTTP API call
 11. Executes jobs that are missed due to manual stoppage (see above) or application being down
 12. Logging of all job executions with additional meta-data about execution into the database.
 13. Able to define arbitrary parameter object in the Job definition, to be passed to jobs at runtime
@@ -62,7 +62,7 @@ The *Job Scheduler* has the following features -
 ## Setup
 To get the *Job Scheduler* feature, the following changes need to be done in the *oe-Cloud* based application:
 
-1. The [**oe-master-job-executor**](http://evgit/oecloud.io/oe-master-job-executor) node module and this (**oe-job-scheduler**) module 
+1. The [**oe-master-job-executor**](http://evgit/oec-next/oe-master-job-executor) node module and this (**oe-job-scheduler**) module 
    needs to be added as application  ``package.json`` dependencies. 
 2. The above modules need to be added to the `server/app-list.json` file in the app.
 3. There should be one or more job functions exported from a node module which is part of the application.
@@ -90,8 +90,8 @@ The code snippets below show how steps 1 and 2 can be done:
        ...
        ...
        ...
-       <B>"oe-master-job-executor": "git+http://evgit/oecloud.io/oe-master-job-executor.git#master",
-       "oe-job-scheduler": "git+http://evgit/oecloud.io/oe-job-scheduler.git#master",</B>
+       <B>"oe-master-job-executor": "git+http://evgit/oec-next/oe-master-job-executor.git#master",
+       "oe-job-scheduler": "git+http://evgit/oec-next/oe-job-scheduler.git#master",</B>
        ...
        ...
 </pre>
