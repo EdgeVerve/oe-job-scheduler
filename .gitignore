@@ -40,3 +40,4 @@ out/
 *.heapsnapshot
 *.zip
 /common/models/test
+package-lock.json

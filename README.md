@@ -11,34 +11,34 @@
 
 <a name="Need"></a>
 ## Need
-Enterprise applications often require to run jobs - batch or otherwise - automatically, at pre-defined times and/or intervals. 
+Enterprise applications often require to run jobs - batch or otherwise - automatically, at pre-defined times and/or intervals.
 Such jobs are run as a background process, and may need dedicated hardware/infrastructure with its own load balancing. Typically,
-these jobs don't share processing infrastructure with that of OLTP app-instances so as to minimize the impact of the job's load 
+these jobs don't share processing infrastructure with that of OLTP app-instances so as to minimize the impact of the job's load
 on the online performance of the application.
 
 <a name="Implementation"></a>
 ## Implementation
 The **oe-job-scheduler** module provides the infrastructure for catering to the above need. It is implemented as an **app-list**
-module for **oe-Cloud** based applications. 
+module for **oe-Cloud** based applications.
 It provides the ability to schedule the execution of any function exported from a node-module that can be "require"d. The *schedule*
 can either be specified in the form of a string which has the cron format, or it can simply be an interval (number, in milliseconds).
 
 The cron-like scheduling functionality is obtained using the open-source [**node-schedule**](https://www.npmjs.com/package/node-schedule) project.
-**node-schedule** is a NodeJS module that exposes a ``scheduleJob()`` function for scheduling a job. 
+**node-schedule** is a NodeJS module that exposes a ``scheduleJob()`` function for scheduling a job.
 
 The **oe-job-scheduler** uses this function to schedule all unscheduled and enabled jobs available in a database table called **Job**.
 This happens on application startup.
 
-To prevent jobs getting scheduled multiple times in a clustered environment, the [**oe-master-job-executor**](http://evgit/oec-next/oe-master-job-executor) module
-is used to schedule the jobs. **oe-master-job-executor** also ensures that the *Job Sheduler* is restarted on another app-instance 
+To prevent jobs getting scheduled multiple times in a clustered environment, the [**oe-master-job-executor**](http://evgit/oecloud.io/oe-master-job-executor) module
+is used to schedule the jobs. **oe-master-job-executor** also ensures that the *Job Sheduler* is restarted on another app-instance
 if the app-instance currently handling the scheduling goes down for any reason.
 
-An overview of the implementation in the form of a function call-stack is available [here](http://evgit/oec-next/oe-job-scheduler/blob/master/JobScheduler.xlsx). 
+An overview of the implementation in the form of a function call-stack is available [here](http://evgit/oecloud.io/oe-job-scheduler/blob/master/JobScheduler.xlsx).
 Mouseover on each function-block for additional details.
 
 <a name="Features"></a>
 ## Features
-The *Job Scheduler* has the following features - 
+The *Job Scheduler* has the following features -
 
 1. Able to schedule any number of arbitrary jobs by POSTing to a database table
 2. Can schedule using the cron format or using simple interval specification
@@ -49,7 +49,7 @@ The *Job Scheduler* has the following features -
 7. In a cluster, one can limit the scheduler to use specific app-instances by setting an environment variable
 8. Balances the job triggers on all available "runners" in a round-robin fashion (Load balancing)
 9. Facility for retry of defunct jobs and max-retry-count
-10. Can manually [stop and restart](http://evgit/oec-next/oe-master-job-executor/blob/master/README.md#Control) the *Job Scheduler* and job executions by HTTP API call
+10. Can manually [stop and restart](http://evgit/oecloud.io/oe-master-job-executor/blob/master/README.md#Control) the *Job Scheduler* and job executions by HTTP API call
 11. Executes jobs that are missed due to manual stoppage (see above) or application being down
 12. Logging of all job executions with additional meta-data about execution into the database.
 13. Able to define arbitrary parameter object in the Job definition, to be passed to jobs at runtime
@@ -62,11 +62,11 @@ The *Job Scheduler* has the following features -
 ## Setup
 To get the *Job Scheduler* feature, the following changes need to be done in the *oe-Cloud* based application:
 
-1. The [**oe-master-job-executor**](http://evgit/oec-next/oe-master-job-executor) node module and this (**oe-job-scheduler**) module 
-   needs to be added as application  ``package.json`` dependencies. 
+1. The [**oe-master-job-executor**](http://evgit/oecloud.io/oe-master-job-executor) node module and this (**oe-job-scheduler**) module
+   needs to be added as application  ``package.json`` dependencies.
 2. The above modules need to be added to the `server/app-list.json` file in the app.
 3. There should be one or more job functions exported from a node module which is part of the application.
-4. The environment variable ``IS_JOB_RUNNER`` should be set with a value of ``true`` before the application is started. 
+4. The environment variable ``IS_JOB_RUNNER`` should be set with a value of ``true`` before the application is started.
    <pre>
    C:\> set IS_JOB_RUNNER=true   ## Windows
    C:\> node .
@@ -79,7 +79,7 @@ To get the *Job Scheduler* feature, the following changes need to be done in the
 
 
 
-The code snippets below show how steps 1 and 2 can be done: 
+The code snippets below show how steps 1 and 2 can be done:
 
 **package.json**  (only part of the file is shown here, with relevant section in **bold**):
 
@@ -90,8 +90,8 @@ The code snippets below show how steps 1 and 2 can be done:
        ...
        ...
        ...
-       <B>"oe-master-job-executor": "git+http://evgit/oec-next/oe-master-job-executor.git#master",
-       "oe-job-scheduler": "git+http://evgit/oec-next/oe-job-scheduler.git#master",</B>
+       <B>"oe-master-job-executor": "git+http://evgit/oecloud.io/oe-master-job-executor.git#master",
+       "oe-job-scheduler": "git+http://evgit/oecloud.io/oe-job-scheduler.git#master",</B>
        ...
        ...
 </pre>
@@ -128,17 +128,17 @@ The code snippets below show how steps 1 and 2 can be done:
 Consider a job which is encapsulated in a function called ``jobFunc``, which is exported from a node module called ``jobs/end-of-day-jobs.js``,
 where ``jobs`` is a folder in the root of the application.
 
-A sample ``jobs/end-of-day-jobs.js`` file is shown below: 
+A sample ``jobs/end-of-day-jobs.js`` file is shown below:
 
 ```javascript
 var jobSch = require('oe-job-scheduler');
 
 var completionStatus, percentage = 0, errors = false;
 
-function jobFunc(executionID, paramObj) {    // paramObj is an arbitrary parameter object defined 
+function jobFunc(executionID, paramObj) {    // paramObj is an arbitrary parameter object defined
                                              // in the Job definition passed to the job at runtime
-                                             
-    // Optionally, you can check for conditions when this Job should not run, for e.g., 
+
+    // Optionally, you can check for conditions when this Job should not run, for e.g.,
     // a holiday, and skip the Job execution using the skip() function as shown below
     if( appUtil.holiday() ) {
         jobSch.skip(executionID, { status: 0, msg: "Skipping as it is a holiday today"}, function () {});
@@ -158,27 +158,27 @@ function jobFunc(executionID, paramObj) {    // paramObj is an arbitrary paramet
         // the job, or if any exception happens.
         completionStatus = { status: percentage++ };
         jobSch.heartbeat(executionID, completionStatus, function () {});   // IMPORTANT: This call to heartbeat() need not be inside the
-                                                                           // processing loop as shown here. You could have this repeatedly 
+                                                                           // processing loop as shown here. You could have this repeatedly
                                                                            // called at a suitable frequency from a setInterval(), for example.
                                                                            // In that case, be sure to to call clearInterval() just before you
                                                                            // call jobSch.done()
-        
-        
+
+
         // Optionally, you can fail the current execution if some error occurs in the Job
         // by calling the fail() function as follows
         if( seriousError ) {
             jobSch.fail(executionID, { status: percentage, msg: "Failing as seriousError occurred"}, function () {});
             errors = true;
             return false;  // break the loop to avoid executing the job despite calling skip()
-        } else return true; 
+        } else return true;
 
     });
-    
+
     // Call the done function once at the end of a successful job execution
     if(!errors)
         jobSch.done(executionID, completionStatus, function () {});
-    
-    
+
+
 }
 
 // Export the function(s)
@@ -188,8 +188,8 @@ module.exports = {
 
 ```
 
-As seen in the above sample job, the job function (``jobFunc``, in this case) needs to let the *job-scheduler* know that it is still active by calling 
-the ``heartbeat()`` function exposed by the *job-scheduler* module. Otherwise, the job will be marked as **failed**, and it will be retried if it is 
+As seen in the above sample job, the job function (``jobFunc``, in this case) needs to let the *job-scheduler* know that it is still active by calling
+the ``heartbeat()`` function exposed by the *job-scheduler* module. Otherwise, the job will be marked as **failed**, and it will be retried if it is
 configured to be retriable.
 
 Similarly, a ``done()`` function needs to be called once at the end of the job execution.
@@ -260,16 +260,16 @@ The following example defines two jobs - a starting job with jobID ``Job1`` and 
 [{
     "jobID" : "Job1",        // The main Job that is scheduled to run at 11:15 pm
     "schedule" : "15 23 * * *",
-    "successors": [{jobID: "Job2", parameter: {some: "value", another: "one"}}],  // Array of successor objects, each element 
+    "successors": [{jobID: "Job2", parameter: {some: "value", another: "one"}}],  // Array of successor objects, each element
                                                                                   // defining a jobID and an optional parameter object
     "enabled" : true,
     "mdl" : "jobs/end-of-day-jobs",
-    "fn" : "jobFunc1",   
+    "fn" : "jobFunc1",
     "retryEnabled" : true,
-    "maxRetryCount" : 2 
+    "maxRetryCount" : 2
 },
 {
-    "jobID": "Job2",        // The successor job 
+    "jobID": "Job2",        // The successor job
     "enabled": true,
     "schedule": "chain",                // If this job is to be used only as a successor to other jobs, then
                                         // the value needs to be "chain". Otherwise, it could be a regular cron schedule string.
@@ -307,38 +307,38 @@ The following are the configuration parameters:
 
 <pre>
 ----------------------------------------------------------------------------------------------------------------------------------------
-config.json setting                         Env Variable                         type          default    Description          
+config.json setting                         Env Variable                         type          default    Description
 ----------------------------------------------------------------------------------------------------------------------------------------
-jobScheduler.runnerUpdateInterval          JOB_RUNNER_UPDATE_INTERVAL            number (ms)   15000      Frequency at which a global array containing 
+jobScheduler.runnerUpdateInterval          JOB_RUNNER_UPDATE_INTERVAL            number (ms)   15000      Frequency at which a global array containing
                                                                                                           available runners is updated
-                                                                                                          
+
 jobScheduler.scheduleNewJobsInterval       SCHEDULE_NEW_JOBS_INTERVAL            number (ms)   30000      Frequency at which the Jobs table is polled for
                                                                                                           new enabled jobs to schedule
-                                                                                                          
-jobScheduler.defunctJobsRetryInterval      DEFUNCT_JOBS_RETRY_INTERVAL           number (ms)   30000      Frequency at which JobExecution table is checked for - 
+
+jobScheduler.defunctJobsRetryInterval      DEFUNCT_JOBS_RETRY_INTERVAL           number (ms)   30000      Frequency at which JobExecution table is checked for -
                                                                                                           1. jobs that are defunct, i.e., jobs which are
-                                                                                                             neither COMPLETED nor FAILED, whose heartbeats 
+                                                                                                             neither COMPLETED nor FAILED, whose heartbeats
                                                                                                              are older than DEFUNCT_JOB_TOLERANCE which is
                                                                                                              equal to (3 * DEFUNCT_JOBS_RETRY_INTERVAL)
                                                                                                           2. jobs that are missed due to manual stoppage
                                                                                                              or application being brought down.
-                                                                                                          
+
 jobScheduler.jobTriggerFailRetryDelay      JOB_TRIGGER_FAIL_RETRY_DELAY          number (ms)   5000       The delay after which a retry of a retry-able job is
                                                                                                           performed, after an unsuccessful attempt to trigger it
-                                                                                                          
+
 jobScheduler.runnerHeartbeatInterval       JOB_RUNNER_HEARTBEAT_INTERVAL         number (ms)   20000      Frequency at which the job runner heartbeat is sent
 
 jobScheduler.runnerCleanupInterval         JOB_RUNNER_CLEANUP_INTERVAL           number (ms)   15000      Frequency at which the JobRunner table is checked for
                                                                                                           stale runners for deletion
-                                                                                                          
+
 jobScheduler.runnerRetryInterval           JOB_RUNNER_RETRY_INTERVAL             number (ms)   60000      Frequency at which an app-instance tries to become a
                                                                                                           job-runner if it fails to become one due to any reason
-                                                                                                          
-jobScheduler.runnerMaxHeartbeatRetryCount  JOB_RUNNER_MAX_HEARTBEAT_RETRY_COUNT  number        3          The maximum number of job-runner heartbeat failures 
-                                                                                                          that are tolerated before discarding a job-runner and 
+
+jobScheduler.runnerMaxHeartbeatRetryCount  JOB_RUNNER_MAX_HEARTBEAT_RETRY_COUNT  number        3          The maximum number of job-runner heartbeat failures
+                                                                                                          that are tolerated before discarding a job-runner and
                                                                                                           trying to become a new job-runner again
-                                                                                                          
-jobScheduler.runnerRetryDelay              JOB_RUNNER_HEARTBEAT_RETRY_DELAY      number (ms)   2000       Frequency at which job-runner heartbeat is updated in  
+
+jobScheduler.runnerRetryDelay              JOB_RUNNER_HEARTBEAT_RETRY_DELAY      number (ms)   2000       Frequency at which job-runner heartbeat is updated in
                                                                                                           the JobRunner table
 
 ----------------------------------------------------------------------------------------------------------------------------------------
