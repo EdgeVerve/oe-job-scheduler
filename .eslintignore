@@ -1,0 +1,6 @@
+/client/
+/coverage/
+/node_modules/
+server/dropdb.js
+/lib/expression-language/expression-syntax-parser.js
+/test/

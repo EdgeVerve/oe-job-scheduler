@@ -1,0 +1,18 @@
+[{
+        "path": "oe-cloud",
+        "enabled": true
+    },
+    {
+        "path": "oe-master-job-executor",
+        "enabled": true
+    },
+    {
+        "path": "./",
+        "enabled": true,
+        "serverDir": "test"
+    },
+    {
+        "path": "./",
+        "enabled": true
+    }
+]

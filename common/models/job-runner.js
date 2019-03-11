@@ -7,6 +7,7 @@
 
 var loopback = require('loopback');
 var logger = require('oe-logger');
+var jobSch = require('../../lib/jobScheduler');
 var log = logger('jobRunner');
 var path = require('path');
 var options = {
@@ -45,6 +46,46 @@ module.exports = function JobRunnerFn(JobRunner) {
       root: true
     }]
   });
+
+
+  JobRunner.runJobNow = function runJobNow(jobID, params, opts, cb) {
+    // istanbul ignore else
+    if (!cb && typeof opts === 'function') cb = opts;
+    var TAG = 'runJobNow(jobID, params, opts, cb): ';
+    log.debug(TAG, 'Running Job ' + jobID + ' on this Runner');
+    cb(null, {status: 'Job ' + jobID + ' triggered'});
+    if (params && Object.keys(params).length === 0) {params = null;}
+    jobSch.executeJobNow(jobID, params, function (err) {
+      if (err) {
+        // eslint-disable-next-line no-console
+        console.error(err);
+      }
+    });
+  };
+
+  JobRunner.remoteMethod('runJobNow', {
+    description: 'runs a job on this runner manually',
+    accessType: 'WRITE',
+    accepts: [{
+      arg: 'jobID',
+      type: 'string',
+      required: true
+    }, {
+      arg: 'params',
+      type: 'object',
+      http: { source: 'body' },
+      required: false
+    }],
+    http: {
+      path: '/runJobNow/:jobID',
+      verb: 'post'
+    },
+    returns: [{
+      arg: 'body',
+      type: 'object',
+      root: true
+    }]
+  });
 };
 
 
@@ -65,6 +106,7 @@ function execute(executionID, cb) {
     } else {
       var mdl = execJob.mdl;
       var fn = execJob.fn;
+      var parameter = execJob.parameter;
       /* istanbul ignore if */
       if (!mdl) {
         // console.log('No module found for executionID ' + executionID);
@@ -87,7 +129,7 @@ function execute(executionID, cb) {
           log.error(TAG, 'Function ' + fn + ' not found in module ' + mdl);
           return cb(new Error('Function ' + fn + ' not found in module ' + mdl), null);
         }
-        m[fn](executionID);
+        m[fn](executionID, parameter);
         cb(null, 'OK');
       } catch (e) {
         // istanbul ignore next
