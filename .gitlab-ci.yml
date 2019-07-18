@@ -33,6 +33,7 @@ npminstall:
     - npm config set registry http://10.188.25.62:9002/
     - time npm install --no-optional
     - echo "Node Modules Installed"
+    - mkdir -p ./artifacts/${CI_PROJECT_NAME}/
     - npm audit --json > ./artifacts/${CI_PROJECT_NAME}/vulnerabilities.json || true
     - if npm audit; then status_vulnerabilities=0; else status_vulnerabilities=1; fi
     - if [ $status_vulnerabilities == 1 ]; then echo "Dependency vulnerabilities exist"; fi
