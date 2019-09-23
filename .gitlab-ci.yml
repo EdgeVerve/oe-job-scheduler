@@ -4,15 +4,19 @@ stages:
   - build
   - cleanup
 
-image: $REGISTRY/debian-node-oracle-docker
 variables:
+  DOMAIN_NAME: oecloud.local
+  PERF_DOMAIN_NAME: oecloud.perf
   REGISTRY: registry.${DOMAIN_NAME}
+  EXECUTOR_IMAGE: oecloud-executor:10.x
+  EXECUTOR_IMAGE_ORACLE: debian-node-oracle-docker:10.x
+
+image: ${REGISTRY}/${EXECUTOR_IMAGE}
 
 before_script:
   - export project=${CI_PROJECT_NAME//[^[:alnum:]]/}
   - export group=${CI_PROJECT_NAMESPACE//[^[:alnum:]]/}
   - export branch=${CI_BUILD_REF_NAME//[^[:alnum:]]/}
-  - export pipelineId=${CI_PIPELINE_ID//[^[:alnum:]]/}
 
 npminstall:
   stage: pre-build
@@ -89,6 +93,7 @@ postgrestest:
     - CEP_RUNNER
     
 oracletest:
+  image: ${REGISTRY}/${EXECUTOR_IMAGE_ORACLE}
   stage: pre-build-test
   script:
     - echo 'Performing Oracle Test'
