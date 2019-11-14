@@ -204,6 +204,7 @@ This job can be scheduled by POSTing the following data into the ``Job`` table o
 {
     "jobID" : "EOD.JobFunc",           // Mandatory. Arbitrary unique string identifier
     "schedule" : "15 23 * * *",       // Schedule specification in cron format. Will be used if specified. Will use 'interval' if not specified.
+//    "schedule" : { start: startTime, end: endTime, rule: "15 23 * * *"},       // Alternate Schedule specification to include a start and end time. startTime, endTime are JavaScript Date objects. Will be used if specified. Will use 'interval' if not specified.
 //  "interval": 86400,                 // Ignored if 'schedule' is specified
     "enabled" : true,                  // Optional. Default: false. Needs to be true to actually schedule this job
     "mdl" : "jobs/end-of-day-jobs",    // Mandatory. The node module that exports the job function to be executed at the scheduled time

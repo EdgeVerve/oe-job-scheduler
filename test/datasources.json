@@ -13,10 +13,8 @@
         "port": 27017,
         "url": "mongodb://localhost:27017/oe-master-job-executor",
         "database": "oe-master-job-executor",
-        "password": "admin",
         "name": "db",
         "connector": "mongodb",
-        "user": "admin",
         "connectionTimeout": 500000,
         "connectTimeoutMS": 500000,
         "socketTimeoutMS": 500000

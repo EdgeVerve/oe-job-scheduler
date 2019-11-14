@@ -28,7 +28,7 @@ app.boot(__dirname, function (err) {
     if (err) {
         console.log(chalk.red(err));
         log.error(err);
-        process.eit(1);
+        process.exit(1);
     }
     app.start();
     app.emit('test-start');
@@ -359,7 +359,7 @@ describe(chalk.blue('oe-job-scheduler-test Started'), function (done) {
         ];
 
         eventEmitter.once('job10', function (mdl, fn) {
-            setTimeout(done, 5000);
+            setTimeout(done, 50000);
         });
 
         Job.create(data, options, function (err, res) {
@@ -566,6 +566,43 @@ describe(chalk.blue('oe-job-scheduler-test Started'), function (done) {
         });
     });
 
+
+
+    it('should schedule a Job successfully with alternate schedule format (start, end, rule)', function (done) {
+        this.timeout(600000);
+        var TAG = "[it should schedule a Job successfully within " + (2 * jshConfig.scheduleNewJobsInterval / 1000) + "s ]";
+        console.log(chalk.yellow("[" + new Date().toISOString() + "]      : ", "Starting " + TAG));
+        
+        var start = new Date();
+        var end = new Date();
+        start.setMinutes(start.getMinutes() + 1);
+        end.setMinutes(end.getMinutes() + 3);
+        console.log('start-min', start.getMinutes());
+        console.log('end-min', end.getMinutes());
+
+        var data = [
+            {
+                "jobID": "JOB1",
+                "enabled": true,
+                "schedule": JSON.stringify({ start: start, end: end, rule: "* * * * *"}),
+                "mdl": "test/jobs/job-module1",
+                "fn": "function1",
+                "retryEnabled": true,
+                "maxRetryCount": 4,
+                "scheduled": false
+            }
+        ];
+
+        Job.create(data, options, function (err, res) {
+            expect(err).not.to.be.defined;
+            expect(res).not.to.be.undefined;
+            eventEmitter.once('job-scheduler-scheduled-new-job', function (jobID, schedule) {
+                console.log('job-scheduler-scheduled-new-job event fired for jobID ' + jobID + ' with schedule ' + JSON.stringify(schedule));
+                done();
+            });
+
+        });
+    });
 
 
 
