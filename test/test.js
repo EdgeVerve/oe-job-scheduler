@@ -577,8 +577,6 @@ describe(chalk.blue('oe-job-scheduler-test Started'), function (done) {
         var end = new Date();
         start.setMinutes(start.getMinutes() + 1);
         end.setMinutes(end.getMinutes() + 3);
-        console.log('start-min', start.getMinutes());
-        console.log('end-min', end.getMinutes());
 
         var data = [
             {

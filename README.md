@@ -41,7 +41,7 @@ Mouseover on each function-block for additional details.
 The *Job Scheduler* has the following features -
 
 1. Able to schedule any number of arbitrary jobs by POSTing to a database table
-2. Can schedule using the cron format or using simple interval specification
+2. Can schedule using the cron format, an alternative format (start, end, rule), or using simple interval specification
 3. Jobs can be arbitrary functions exported from arbitrary node-modules
 4. The *Job Scheduler* is part of the application, and runs in the same NodeJS runtime as the application
 5. There is no dependency on any extra components other than the dependency on the *oe-master-job-executor* module
@@ -214,6 +214,20 @@ This job can be scheduled by POSTing the following data into the ``Job`` table o
     "maxRetryCount" : 2                // Optional. Default: 0. Will be used if 'retryEnabled' is true
 }
 ```
+
+An alternative way of providing the schedule is as follows:
+
+```javascript
+. . .
+. . .
+"schedule" : '{"start":"2021-01-01T00:00:00.000Z","end":"2022-12-31T00:00:00.000Z","rule":"* * * * *"}',       // Schedule specification using "start, end, rule" format. Will be used if specified. 
+. . .
+. . .
+```
+The above uses a start time, end time and a cron specification. 
+
+Note that the `schedule` value is a stringified JSON. Basically, the value can be generated as `JSON.stringify({start: startTime, end: endTime, rule: "0 17 * * *"})` where `startTime` and `endTime` are Javascript `Date` objects.
+
 
 <a name="Manual trigger of Jobs"></a>
 ## Manual trigger of Jobs
