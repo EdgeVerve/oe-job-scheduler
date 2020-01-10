@@ -23,7 +23,7 @@ module.exports = function bootCleanup(server, cb) {
     /* istanbul ignore if */
     if (err) {
       // eslint-disable-next-line no-console
-      console.error(err);  
+      console.error(err);
       log.error(TAG, 'Could not delete JobExecution records during boot-cleanup' + JSON.stringify(err));
       return cb(err, null);
     }
@@ -32,7 +32,7 @@ module.exports = function bootCleanup(server, cb) {
       /* istanbul ignore if */
       if (err) {
         // eslint-disable-next-line no-console
-        console.error(err);  
+        console.error(err);
         log.error(TAG, 'Could not delete Job records during boot-cleanup' + JSON.stringify(err));
         return cb(err, null);
       }
@@ -41,7 +41,7 @@ module.exports = function bootCleanup(server, cb) {
         /* istanbul ignore if */
         if (err) {
           // eslint-disable-next-line no-console
-          console.error(err);  
+          console.error(err);
           log.error(TAG, 'Could not delete MasterLock records during boot-cleanup' + JSON.stringify(err));
           return cb(err, null);
         }
@@ -50,7 +50,7 @@ module.exports = function bootCleanup(server, cb) {
           /* istanbul ignore if */
           if (err) {
             // eslint-disable-next-line no-console
-            console.error(err);  
+            console.error(err);
             log.error(TAG, 'Could not delete MasterControl records during boot-cleanup' + JSON.stringify(err));
             return cb(err, null);
           }
