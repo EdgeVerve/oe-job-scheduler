@@ -107,6 +107,10 @@
         "nextTriggerTime": {
             "type": "date",
             "required": false
+        },
+        "nextRunTime": {
+            "type": "date",
+            "required": false
         }
     },
     "validations": [],
